@@ -26,6 +26,7 @@ def encode_token(payload: dict)-> str:
 
 def decode_token(token: Annotated[str, Depends(oauth2_scheme)])-> dict:
     data = jwt.decode(token, "my-secret", algorithms=["HS256"])
+    users.get(data["username"])
     return data
 
 @app.post("/token")
