@@ -20,10 +20,10 @@ users = {
 }
 
 def encode_token(payload: dict)-> str:
-    return ""
+    return "fdsafdsafdas"
 
-def decode_token(token: str)-> dict:
-    return {}
+def decode_token(token: Annotated[str, Depends(oauth2_scheme)])-> dict:
+    return users.get("franco")
 
 @app.post("/token")
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
