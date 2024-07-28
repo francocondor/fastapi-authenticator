@@ -2,6 +2,7 @@ from typing import Annotated
 from fastapi import FastAPI, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.exceptions import HTTPException
+from jose import jwt
 
 app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -20,10 +21,12 @@ users = {
 }
 
 def encode_token(payload: dict)-> str:
-    return "fdsafdsafdas"
+    token = jwt.encode(payload, "my-secret", algorithm="HS256")
+    return token
 
 def decode_token(token: Annotated[str, Depends(oauth2_scheme)])-> dict:
-    return users.get("franco")
+    data = jwt.decode(token, "my-secret", algorithms=["HS256"])
+    return data
 
 @app.post("/token")
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
