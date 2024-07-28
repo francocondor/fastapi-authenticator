@@ -32,8 +32,8 @@ def decode_token(token: Annotated[str, Depends(oauth2_scheme)])-> dict:
 @app.post("/token")
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     user = users.get(form_data.username)
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username")
+    if not user or user["password"] != form_data.password:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
     token = encode_token({"username": user["username"], "email": user["email"]})
     return {"access_token": token}
 
