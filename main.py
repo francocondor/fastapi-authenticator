@@ -20,22 +20,28 @@ users = {
     },
 }
 
-def encode_token(payload: dict)-> str:
+
+def encode_token(payload: dict) -> str:
     token = jwt.encode(payload, "my-secret", algorithm="HS256")
     return token
 
-def decode_token(token: Annotated[str, Depends(oauth2_scheme)])-> dict:
+
+def decode_token(token: Annotated[str, Depends(oauth2_scheme)]) -> dict:
     data = jwt.decode(token, "my-secret", algorithms=["HS256"])
     users.get(data["username"])
     return data
+
 
 @app.post("/token")
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     user = users.get(form_data.username)
     if not user or user["password"] != form_data.password:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    token = encode_token({"username": user["username"], "email": user["email"]})
+        raise HTTPException(
+            status_code=400, detail="Incorrect username or password")
+    token = encode_token(
+        {"username": user["username"], "email": user["email"]})
     return {"access_token": token}
+
 
 @app.get("/users/profile")
 def profile(my_user: Annotated[dict, Depends(decode_token)]):
